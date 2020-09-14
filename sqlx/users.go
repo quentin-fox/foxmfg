@@ -30,7 +30,6 @@ INSERT INTO users ("firstName", "lastName", "email", "isVerified")
 VALUES ($1, $2, $3, $4)
 RETURNING id
 	`
-	fmt.Println(q)
 	row := s.DB.QueryRowx(q, u.FirstName, u.LastName, u.Email, u.IsVerified)
 	err := row.Scan(&u.ID)
 	if err != nil {
@@ -38,6 +37,7 @@ RETURNING id
 		return err
 	}
 
+	fmt.Println(u)
 	return nil
 }
 

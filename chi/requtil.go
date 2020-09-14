@@ -30,6 +30,7 @@ func fail(w http.ResponseWriter, err error, status int) {
 
 	if msg := err.Error(); msg != "" {
 		r.Message = msg
+		fmt.Println(msg)
 	}
 
 	if err := encoder(w).Encode(r); err != nil {

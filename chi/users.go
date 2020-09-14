@@ -15,16 +15,15 @@ type UserHandler struct {
 
 func (h *UserHandler) getRoutes() func(r chi.Router) {
 	return func(r chi.Router) {
-		r.Get("/list", h.list)
-		r.Get("/{id}", h.listOne)
-		r.Post("/create", h.create)
-		r.Post("/update", h.update)
-		r.Post("/verify", h.verify)
+		r.Get("/list", h.List)
+		r.Get("/{id}", h.ListOne)
+		r.Post("/create", h.Create)
+		r.Post("/update", h.Update)
+		r.Post("/verify", h.Verify)
 	}
-
 }
 
-func (h *UserHandler) list(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	users, err := h.UserService.List()
 
 	if err != nil {
@@ -35,19 +34,18 @@ func (h *UserHandler) list(w http.ResponseWriter, r *http.Request) {
 	ok(w, users)
 }
 
-func (h *UserHandler) create(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user fox.User
 	if err := decode(r, &user); err != nil {
 		fail(w, err, http.StatusBadRequest)
 		return
-		
 	}
 
 	h.UserService.Create(&user)
 	ok(w, user)
 }
 
-func (h *UserHandler) listOne(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) ListOne(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		fail(w, err, http.StatusBadRequest)
@@ -64,7 +62,7 @@ func (h *UserHandler) listOne(w http.ResponseWriter, r *http.Request) {
 	ok(w, user)
 }
 
-func (h *UserHandler) update(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var user fox.User
 	if err := decode(r, &user); err != nil {
 		fail(w, err, http.StatusBadRequest)
@@ -85,7 +83,7 @@ func (h *UserHandler) update(w http.ResponseWriter, r *http.Request) {
 	ok(w, user)
 }
 
-func (h *UserHandler) verify(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	var user fox.User
 	if err := decode(r, &user); err != nil {
 		fail(w, err, http.StatusBadRequest)
