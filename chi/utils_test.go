@@ -2,10 +2,13 @@ package chi_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/go-chi/chi"
 )
 
 const host = "localhost:3000"
@@ -18,7 +21,7 @@ func makePostRequest(t *testing.T, route string, body map[string]interface{}, ha
 	}
 
 	reader := bytes.NewReader(data)
-	req, err := http.NewRequest(http.MethodPost, host + route, reader)
+	req, err := http.NewRequest(http.MethodPost, host+route, reader)
 	req.Header.Add("Content-Type", "application/json")
 
 	if err != nil {
@@ -31,13 +34,13 @@ func makePostRequest(t *testing.T, route string, body map[string]interface{}, ha
 	return rec.Result()
 }
 
-func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc) *http.Response {
-	req, err := http.NewRequest(http.MethodGet, host + route, nil)
-	
+func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc, ctx *chi.Context) *http.Response {
+	req, err := http.NewRequest(http.MethodGet, host+route, nil)
 	if err != nil {
 		t.Fatalf("could not create request for route %s: %v", route, err)
 	}
 
+	req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
 	rec := httptest.NewRecorder()
 	handler(rec, req)
 

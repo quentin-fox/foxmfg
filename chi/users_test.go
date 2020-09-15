@@ -67,7 +67,7 @@ func TestUserList(t *testing.T) {
 		Result []fox.User
 	}
 
-	res := makeGetRequest(t, "/users/list", h.List)
+	res := makeGetRequest(t, "/users/list", h.List, nil)
 	decodeRequest(t, res, &response)
 	testStatus(t, response.Status, 200)
 
@@ -105,7 +105,9 @@ func TestUserListOne(t *testing.T) {
 		Result fox.User
 	}
 
-	res := makeGetRequest(t, "/users/1", h.ListOne)
+	ctx := chi.NewRouteContext()
+	ctx.URLParams.Add("id", "1")
+	res := makeGetRequest(t, "/users/1", h.ListOne, ctx)
 	decodeRequest(t, res, &response)
 	testStatus(t, response.Status, 200)
 

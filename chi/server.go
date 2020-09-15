@@ -32,3 +32,12 @@ type Response struct {
 	Result interface{} `json:"result,omitempty"`
 	Message string `json:"message,omitempty"`
 }
+
+func NewRouteContext() *chi.Context {
+	return chi.NewRouteContext()
+}
+
+var (
+	RouteCtxKey = chi.RouteCtxKey
+)
+
