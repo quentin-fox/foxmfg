@@ -34,13 +34,20 @@ func makePostRequest(t *testing.T, route string, body map[string]interface{}, ha
 	return rec.Result()
 }
 
-func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc, ctx *chi.Context) *http.Response {
+func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc, params *map[string]string) *http.Response {
 	req, err := http.NewRequest(http.MethodGet, host+route, nil)
 	if err != nil {
 		t.Fatalf("could not create request for route %s: %v", route, err)
 	}
 
-	req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+	if params != nil {
+		ctx := chi.NewRouteContext()
+		for k, v := range *params {
+			ctx.URLParams.Add(k, v)
+		}
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx))
+	}
+
 	rec := httptest.NewRecorder()
 	handler(rec, req)
 

@@ -105,9 +105,10 @@ func TestUserListOne(t *testing.T) {
 		Result fox.User
 	}
 
-	ctx := chi.NewRouteContext()
-	ctx.URLParams.Add("id", "1")
-	res := makeGetRequest(t, "/users/1", h.ListOne, ctx)
+	params := map[string]string{
+		"id": "1",
+	}
+	res := makeGetRequest(t, "/users/1", h.ListOne, &params)
 	decodeRequest(t, res, &response)
 	testStatus(t, response.Status, 200)
 
