@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+const host = "localhost:3000"
+
 func makePostRequest(t *testing.T, route string, body map[string]interface{}, handler http.HandlerFunc) *http.Response {
 	data, err := json.Marshal(body)
 
@@ -16,7 +18,7 @@ func makePostRequest(t *testing.T, route string, body map[string]interface{}, ha
 	}
 
 	reader := bytes.NewReader(data)
-	req, err := http.NewRequest(http.MethodPost, route, reader)
+	req, err := http.NewRequest(http.MethodPost, host + route, reader)
 	req.Header.Add("Content-Type", "application/json")
 
 	if err != nil {
@@ -30,7 +32,7 @@ func makePostRequest(t *testing.T, route string, body map[string]interface{}, ha
 }
 
 func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc) *http.Response {
-	req, err := http.NewRequest(http.MethodGet, route, nil)
+	req, err := http.NewRequest(http.MethodGet, host + route, nil)
 	
 	if err != nil {
 		t.Fatalf("could not create request for route %s: %v", route, err)
@@ -40,4 +42,16 @@ func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc) *http.
 	handler(rec, req)
 
 	return rec.Result()
+}
+
+func decodeRequest(t *testing.T, res *http.Response, v interface{}) {
+	if err := json.NewDecoder(res.Body).Decode(v); err != nil {
+		t.Errorf("could not decode request body for route: %s", res.Request.URL)
+	}
+}
+
+func testStatus(t *testing.T, status int, expected int) {
+	if status != expected {
+		t.Errorf("status should be 200; got %d", status)
+	}
 }

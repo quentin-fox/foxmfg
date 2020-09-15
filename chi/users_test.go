@@ -1,7 +1,6 @@
 package chi_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/quentin-fox/fox"
@@ -19,28 +18,22 @@ func TestUserCreation(t *testing.T) {
 	}
 
 	h.UserService = &us
-	
+
 	body := map[string]interface{}{
-		"firstName": "Quentin",
-		"lastName": "Fox",
-		"email": "qfox@test.ca",
+		"firstName":  "Quentin",
+		"lastName":   "Fox",
+		"email":      "qfox@test.ca",
 		"isVerified": false,
 	}
-
-	res := makePostRequest(t, "/users/create", body, h.Create)
 
 	var response struct {
 		Status int
 		Result fox.User
 	}
 
-	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
-		t.Error("Could not decode response")
-	}
-
-	if response.Status != 200 {
-		t.Errorf("status should be 200; got %d", response.Status)
-	}
+	res := makePostRequest(t, "/users/create", body, h.Create)
+	decodeRequest(t, res, &response)
+	testStatus(t, response.Status, 200)
 
 	if response.Result.ID != 1 {
 		t.Errorf("user id should be 1; got %d", response.Result.ID)
@@ -58,10 +51,10 @@ func TestUserList(t *testing.T) {
 	us.ListFn = func() ([]fox.User, error) {
 		var list []fox.User
 		list = append(list, fox.User{
-			ID: 1,
-			FirstName: "Quentin",
-			LastName: "Fox",
-			Email: "qfox@test.ca",
+			ID:         1,
+			FirstName:  "Quentin",
+			LastName:   "Fox",
+			Email:      "qfox@test.ca",
 			IsVerified: true,
 		})
 		return list, nil
@@ -75,14 +68,8 @@ func TestUserList(t *testing.T) {
 	}
 
 	res := makeGetRequest(t, "/users/list", h.List)
-
-	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
-		t.Error("could not decode response")
-	}
-
-	if response.Status != 200 {
-		t.Errorf("status should be 200; got %d", response.Status)
-	}
+	decodeRequest(t, res, &response)
+	testStatus(t, response.Status, 200)
 
 	if length := len(response.Result); length != 1 {
 		t.Errorf("result length should be 1; got %d", length)
@@ -94,5 +81,35 @@ func TestUserList(t *testing.T) {
 
 	if !us.ListInvoked {
 		t.Error("List method was not invoked")
+	}
+}
+
+func TestUserListOne(t *testing.T) {
+	h := chi.UserHandler{}
+	us := mock.UserService{}
+
+	us.ListOneFn = func(id int) (fox.User, error) {
+		return fox.User{
+			ID:         id,
+			FirstName:  "Quentin",
+			LastName:   "Fox",
+			Email:      "qfox@test.ca",
+			IsVerified: true,
+		}, nil
+	}
+
+	h.UserService = &us
+
+	var response struct {
+		Status int
+		Result fox.User
+	}
+
+	res := makeGetRequest(t, "/users/1", h.ListOne)
+	decodeRequest(t, res, &response)
+	testStatus(t, response.Status, 200)
+
+	if response.Result.ID != 1 {
+		t.Errorf("user should have id 1; got %d", response.Result.ID)
 	}
 }
