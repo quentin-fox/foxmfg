@@ -31,3 +31,8 @@ type UserService interface {
 	ListOne(id int) (User, error)
 	Verify(id int) error
 }
+
+type AuthService interface {
+	GenerateHash(password string) (hash string, err error)
+	ValidatePassword(hash string, password string) (bool, error)
+}
