@@ -2,3 +2,4 @@ migrate
 runserver
 config/*.json
 *.http
+id_rsa*

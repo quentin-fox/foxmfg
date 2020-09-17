@@ -35,4 +35,6 @@ type UserService interface {
 type AuthService interface {
 	GenerateHash(password string) (hash string, err error)
 	ValidatePassword(hash string, password string) (bool, error)
+	IssueJWT(u User) (string, error)
+	VerifyJWT(tokenStr string) (bool error)
 }
