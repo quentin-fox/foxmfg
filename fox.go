@@ -31,6 +31,7 @@ type UserService interface {
 	Update(u *User) error
 	List() ([]User, error)
 	ListOne(id int) (User, error)
+	ListWithHash(id int) (User, error)
 	Verify(id int) error
 }
 

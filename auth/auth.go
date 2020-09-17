@@ -20,7 +20,7 @@ type AuthService struct{
 func NewAuthService(c *fox.Config) *AuthService {
 	return &AuthService{
 		privateKey: c.PrivateKey,
-		publicKey: c.PrivateKey,
+		publicKey: c.PublicKey,
 		GetTime: time.Now, // injected to ease testing 
 	}
 }
@@ -38,7 +38,6 @@ func (s *AuthService) GenerateHash(password string) (hash string, err error) {
 
 func (s *AuthService) ValidatePassword(hash string, password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	fmt.Println(hash, password)
 	success := err == nil
 	return success, nil
 }
@@ -77,6 +76,10 @@ func (s *AuthService) VerifyJWT(tokenStr string) (bool, error) {
 	}
 
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyB)
+
+	if err != nil {
+		return isVerified, err
+	}
 
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {

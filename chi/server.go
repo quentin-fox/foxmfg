@@ -10,15 +10,23 @@ import (
 
 type Handler struct {
 	UserHandler
+	AuthHandler
 	r *chi.Mux
 }
 
 func NewHandler() *Handler {
+	h := Handler{}
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
-	h := Handler{r: r}
-	h.r.Route("/users", h.UserHandler.getRoutes())
+	r.Route("/auth", h.AuthHandler.getRoutes())
+
+	r.Group(func(r chi.Router) {
+		r.Use(h.Authenticate)
+		r.Route("/users", h.UserHandler.getRoutes())
+	})
+
+	h.r = r
 	return &h
 }
 

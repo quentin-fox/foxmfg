@@ -38,7 +38,6 @@ RETURNING id
 		return err
 	}
 
-	fmt.Println(u)
 	return nil
 }
 
@@ -72,9 +71,25 @@ func (s *UserService) List() ([]fox.User, error) {
 
 func (s *UserService) ListOne(id int) (fox.User, error) {
 	q := `
-SELECT "id", "firstName", "lastName", "email", "isVerified", "hash" FROM users
+SELECT "id", "firstName", "lastName", "email", "isVerified" FROM users
 WHERE users.id = $1
 	`
+	var user fox.User
+	err := s.DB.Get(&user, q, id)
+	if err != nil {
+		fmt.Println(err)
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (s *UserService) ListWithHash(id int) (fox.User, error) {
+	q := `
+SELECT id, hash FROM users
+WHERE users.id = $1
+	`
+
 	var user fox.User
 	err := s.DB.Get(&user, q, id)
 	if err != nil {

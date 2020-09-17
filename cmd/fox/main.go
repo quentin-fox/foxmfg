@@ -19,7 +19,8 @@ func main() {
 	a := auth.NewAuthService(&c)
 
 	h := chi.NewHandler()
-	h.UserService = &s.UserService
+	h.AuthHandler.UserService = &s.UserService
+	h.UserHandler.UserService = &s.UserService
 	h.AuthService = a
 
 	h.ListenAndServe(c.Addr)

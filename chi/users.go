@@ -11,17 +11,14 @@ import (
 
 type UserHandler struct {
 	UserService fox.UserService
-	AuthService fox.AuthService
 }
 
 func (h *UserHandler) getRoutes() func(r chi.Router) {
 	return func(r chi.Router) {
 		r.Get("/list", h.List)
 		r.Get("/{id}", h.ListOne)
-		r.Post("/create", h.Create)
 		r.Post("/update", h.Update)
 		r.Post("/verify", h.Verify)
-		r.Post("/auth", h.Authenticate)
 	}
 }
 
@@ -34,80 +31,6 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ok(w, users)
-}
-
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var user struct{
-		fox.User
-		Password string `json:"password"`
-	}
-	if err := decode(r, &user); err != nil {
-		fail(w, err, http.StatusBadRequest)
-		return
-	}
-
-	hash, err := h.AuthService.GenerateHash(user.Password)
-
-	if err != nil {
-		fail(w, err, http.StatusInternalServerError)
-		return
-	}
-
-	user.Hash = hash
-	h.UserService.Create(&user.User)
-	response := struct{
-		ID int `json:"id"`
-	}{
-		ID: user.ID,
-	}
-
-	ok(w, response)
-}
-
-func (h *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
-	var body struct{
-		ID int `json:"id"`
-		Password string `json:"password"`
-	}
-	if err := decode(r, &body); err != nil {
-		fail(w, err, http.StatusBadRequest)
-		return
-	}
-
-	user, err := h.UserService.ListOne(body.ID)
-
-	if err != nil {
-		fail(w, err, http.StatusUnauthorized)
-		return
-	}
-
-	isValid, err := h.AuthService.ValidatePassword(user.Hash, body.Password)
-
-	if err != nil {
-		fail(w, err, http.StatusInternalServerError)
-		return
-	}
-
-	if !isValid {
-		err = errors.New("incorrect password")
-		fail(w, err, http.StatusUnauthorized)
-		return
-	}
-
-	tokenStr, err := h.AuthService.IssueJWT(user)
-
-	if err != nil {
-		fail(w, err, http.StatusInternalServerError)
-		return
-	}
-
-	result := struct{
-		Token string `json:"token"`
-	}{
-		Token: tokenStr,
-	}
-
-	ok(w, result)
 }
 
 func (h *UserHandler) ListOne(w http.ResponseWriter, r *http.Request) {
