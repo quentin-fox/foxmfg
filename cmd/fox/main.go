@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/quentin-fox/fox/auth"
 	"github.com/quentin-fox/fox/chi"
 	"github.com/quentin-fox/fox/config"
 	"github.com/quentin-fox/fox/sqlx"
@@ -15,9 +16,11 @@ func main() {
 	}
 
 	s := sqlx.NewStorageService(&c)
+	a := auth.NewAuthService(&c)
 
 	h := chi.NewHandler()
 	h.UserService = &s.UserService
+	h.AuthService = a
 
 	h.ListenAndServe(c.Addr)
 }

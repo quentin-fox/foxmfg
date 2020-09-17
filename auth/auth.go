@@ -17,10 +17,10 @@ type AuthService struct{
 	GetTime func() time.Time
 }
 
-func NewAuthService(privateKey string, publicKey string) *AuthService {
+func NewAuthService(c *fox.Config) *AuthService {
 	return &AuthService{
-		privateKey: privateKey,
-		publicKey: publicKey,
+		privateKey: c.PrivateKey,
+		publicKey: c.PrivateKey,
 		GetTime: time.Now, // injected to ease testing 
 	}
 }
@@ -38,6 +38,7 @@ func (s *AuthService) GenerateHash(password string) (hash string, err error) {
 
 func (s *AuthService) ValidatePassword(hash string, password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	fmt.Println(hash, password)
 	success := err == nil
 	return success, nil
 }

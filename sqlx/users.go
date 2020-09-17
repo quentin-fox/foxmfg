@@ -19,18 +19,19 @@ CREATE TABLE users (
 	"firstName" varchar not null,
 	"lastName" varchar not null,
 	"email" varchar not null,
-	"isVerified" bool not null default false
+	"isVerified" bool not null default false,
+	"hash" varchar not null
 )
 	`
 }
 
 func (s *UserService) Create(u *fox.User) error {
 	q := `
-INSERT INTO users ("firstName", "lastName", "email", "isVerified")
-VALUES ($1, $2, $3, $4)
+INSERT INTO users ("firstName", "lastName", "email", "isVerified", "hash")
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id
 	`
-	row := s.DB.QueryRowx(q, u.FirstName, u.LastName, u.Email, u.IsVerified)
+	row := s.DB.QueryRowx(q, u.FirstName, u.LastName, u.Email, u.IsVerified, u.Hash)
 	err := row.Scan(&u.ID)
 	if err != nil {
 		fmt.Println(err)
@@ -71,7 +72,7 @@ func (s *UserService) List() ([]fox.User, error) {
 
 func (s *UserService) ListOne(id int) (fox.User, error) {
 	q := `
-SELECT "id", "firstName", "lastName", "email", "isVerified" FROM users
+SELECT "id", "firstName", "lastName", "email", "isVerified", "hash" FROM users
 WHERE users.id = $1
 	`
 	var user fox.User

@@ -9,7 +9,8 @@ type Config struct {
 		Password string `json:"password"`
 	}
 	Addr string `json:"addr"`
-
+	PrivateKey string `json:"privateKey"`
+	PublicKey string `json:"publicKey"`
 }
 
 type ConfigService interface {
@@ -22,6 +23,7 @@ type User struct {
 	LastName   string `json:"lastName" db:"lastName"`
 	Email      string `json:"email"`
 	IsVerified bool   `json:"isVerified" db:"isVerified"`
+	Hash       string `db:"hash"`
 }
 
 type UserService interface {
@@ -36,5 +38,5 @@ type AuthService interface {
 	GenerateHash(password string) (hash string, err error)
 	ValidatePassword(hash string, password string) (bool, error)
 	IssueJWT(u User) (string, error)
-	VerifyJWT(tokenStr string) (bool error)
+	VerifyJWT(tokenStr string) (bool, error)
 }

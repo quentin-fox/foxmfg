@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	privateKeyPath = "../id_rsa"
-	publicKeyPath = "../id_rsa.pub"
+	c = fox.Config{
+        PrivateKey: "../id_rsa",
+        PublicKey: "../id_rsa.pub",
+    }
 )
 
 func TestGenerateHash(t *testing.T) {
@@ -74,7 +76,10 @@ func TestHashingUnhashing(t *testing.T) {
 }
 
 func TestIssueJWT(t *testing.T) {
-	a := auth.NewAuthService(privateKeyPath, publicKeyPath) // testing occurs relative to package
+    c := fox.Config{
+        PrivateKey: privateKeyPath
+    }
+	a := auth.NewAuthService(&c) // testing occurs relative to package
 	u := fox.User{
 		ID: 1,
 		FirstName: "Quentin",
@@ -127,7 +132,7 @@ func TestInvalidJWTs(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			a := auth.NewAuthService(privateKeyPath, publicKeyPath)
+			a := auth.NewAuthService(&c)
 			tokenStr, err := a.IssueJWT(u)
 			if err != nil {
 				t.Errorf("unexpected error when issuing jwt: %v", err)
