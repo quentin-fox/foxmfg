@@ -23,7 +23,7 @@ type User struct {
 	LastName   string `json:"lastName" db:"lastName"`
 	Email      string `json:"email"`
 	IsVerified bool   `json:"isVerified" db:"isVerified"`
-	Hash       string `db:"hash"`
+	Hash       string `json:"hash,omitempty" db:"hash"`
 }
 
 type UserService interface {

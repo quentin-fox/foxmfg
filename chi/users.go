@@ -55,7 +55,13 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	user.Hash = hash
 	h.UserService.Create(&user.User)
-	ok(w, user)
+	response := struct{
+		ID int `json:"id"`
+	}{
+		ID: user.ID,
+	}
+
+	ok(w, response)
 }
 
 func (h *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +145,13 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok(w, user)
+	response := struct{
+		ID int `json:"id"`
+	}{
+		ID: user.ID,
+	}
+
+	ok(w, response)
 }
 
 func (h *UserHandler) Verify(w http.ResponseWriter, r *http.Request) {
