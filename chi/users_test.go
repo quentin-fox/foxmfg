@@ -8,42 +8,6 @@ import (
 	"github.com/quentin-fox/fox/mock"
 )
 
-func TestUserCreation(t *testing.T) {
-	h := chi.UserHandler{}
-	us := mock.UserService{}
-
-	us.CreateFn = func(u *fox.User) error {
-		u.ID = 1
-		return nil
-	}
-
-	h.UserService = &us
-
-	body := map[string]interface{}{
-		"firstName":  "Quentin",
-		"lastName":   "Fox",
-		"email":      "qfox@test.ca",
-		"isVerified": false,
-	}
-
-	var response struct {
-		Status int
-		Result fox.User
-	}
-
-	res := makePostRequest(t, "/users/create", body, h.Create)
-	decodeRequest(t, res, &response)
-	testStatus(t, response.Status, 200)
-
-	if response.Result.ID != 1 {
-		t.Errorf("user id should be 1; got %d", response.Result.ID)
-	}
-
-	if !us.CreateInvoked {
-		t.Error("Create method was not invoked")
-	}
-}
-
 func TestUserList(t *testing.T) {
 	h := chi.UserHandler{}
 	us := mock.UserService{}

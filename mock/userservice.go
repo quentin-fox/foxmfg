@@ -17,6 +17,9 @@ type UserService struct {
 
 	VerifyFn func(id int) error
 	VerifyInvoked bool
+
+	ListWithHashFn func(id int) (fox.User, error)
+	ListWithHashInvoked bool
 }
 
 func (s *UserService) Create(u *fox.User) error {
@@ -42,4 +45,9 @@ func (s *UserService) ListOne(id int) (fox.User, error) {
 func (s *UserService) Verify(id int) error {
 	s.VerifyInvoked = true
 	return s.VerifyFn(id)
+}
+
+func (s *UserService) ListWithHash(id int) (fox.User ,error) {
+	s.ListWithHashInvoked = true
+	return s.ListWithHashFn(id)
 }

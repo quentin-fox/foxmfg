@@ -8,9 +8,9 @@ type Config struct {
 		User     string `json:"user"`
 		Password string `json:"password"`
 	}
-	Addr string `json:"addr"`
+	Addr       string `json:"addr"`
 	PrivateKey string `json:"privateKey"`
-	PublicKey string `json:"publicKey"`
+	PublicKey  string `json:"publicKey"`
 }
 
 type ConfigService interface {

@@ -8,7 +8,7 @@ import (
 	"github.com/quentin-fox/fox/auth"
 )
 
-const (
+var (
 	c = fox.Config{
         PrivateKey: "../id_rsa",
         PublicKey: "../id_rsa.pub",
@@ -76,9 +76,6 @@ func TestHashingUnhashing(t *testing.T) {
 }
 
 func TestIssueJWT(t *testing.T) {
-    c := fox.Config{
-        PrivateKey: privateKeyPath
-    }
 	a := auth.NewAuthService(&c) // testing occurs relative to package
 	u := fox.User{
 		ID: 1,

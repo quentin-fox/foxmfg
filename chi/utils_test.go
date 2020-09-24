@@ -56,12 +56,12 @@ func makeGetRequest(t *testing.T, route string, handler http.HandlerFunc, params
 
 func decodeRequest(t *testing.T, res *http.Response, v interface{}) {
 	if err := json.NewDecoder(res.Body).Decode(v); err != nil {
-		t.Errorf("could not decode request body for route: %s", res.Request.URL)
+		t.Errorf("could not decode request body: %v", err)
 	}
 }
 
 func testStatus(t *testing.T, status int, expected int) {
 	if status != expected {
-		t.Errorf("status should be 200; got %d", status)
+		t.Errorf("status should be %d; got %d", expected, status)
 	}
 }
